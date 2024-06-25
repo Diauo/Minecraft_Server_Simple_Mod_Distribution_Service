@@ -36,9 +36,6 @@ logging.basicConfig(level=logging.DEBUG)
 app.logger.setLevel(logging.DEBUG)
 
 scheduler = BackgroundScheduler()
-# 每10分钟运行一次
-scheduler.add_job(func=update_mod_cache, trigger="interval", minutes=10)
-scheduler.start()
 
 # 计算MD5
 def calculate_md5(file_path):
@@ -71,6 +68,10 @@ def update_mod_cache():
                 'name': mod,
                 'type': 'client'
             }
+            
+# 每10分钟运行一次
+scheduler.add_job(func=update_mod_cache, trigger="interval", minutes=10)
+scheduler.start()
 
 class ModDirEventHandler(FileSystemEventHandler):
     def on_modified(self, event):
@@ -82,7 +83,7 @@ class ModDirEventHandler(FileSystemEventHandler):
 
 # 重新更新缓存
 @app.route('/update-cache', methods=['GET'])
-def mod_list():
+def reload_chache():
     app.logger.info('>> 进行缓存更新')
     update_mod_cache()
     return "成功", 200
@@ -123,3 +124,4 @@ if __name__ == '__main__':
         app.logger.info('> 服务断开')
         observer.stop()
         observer.join()
+        atexit.register(lambda: scheduler.shutdown())
