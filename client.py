@@ -21,7 +21,7 @@ def init():
         path = input("请输入Minecraft mod目录: ")
         url = input("请输入Mod分发服务地址(回车使用默认): ")
         if not url:
-            url = "http://t.rainplay.cn:46179"
+            url = ""
 
         config_data["path"] = path
         config_data["url"] = url
